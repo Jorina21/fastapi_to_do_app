@@ -1,16 +1,22 @@
 from typing import Annotated
 
 from fastapi import FastAPI, Query, status, Path
-# import database  
+
+import models
 import services
- 
+from database import Base, engine
 from schemas import TaskCreate, Task, TaskUpdate, TaskPatch, TaskDeleteResponse
+
+#Create tables using the models connected to base
+Base.metadata.create_all(bind=engine)
+ 
 
 app = FastAPI(
     title= "Task Tracker API",
     description= "Simple FastAPI CRUD project for learning backend fundamentals",
     version="1.0.0"
 )
+
 
 TaskID = Annotated[
     int, # the type
