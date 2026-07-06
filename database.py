@@ -1,32 +1,28 @@
-from models import Task
-
-#helper function
-def get_default_tasks():
-    return [ 
-        Task(
-            id = 1,
-            title = "code for 1 hr",
-            description = "part of morning regiment" ,
-            completed = False ,
-
-        ),
-        Task(
-            id = 2,
-            title = "wash Dishes",
-            description = "Do the dishes from last night ",
-            completed = False
-            ),
-
-        Task(
-            id = 3,
-            title = "Gym",
-            description = "Go lift or play basketball",
-            completed = False  
-        )
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
 
 
-    ]
+DATABASE_URL = "sqlite:///./task.db"
 
-tasks = get_default_tasks()
+engine = create_engine(
+    DATABASE_URL,
+    Connect_args = {"check_same_thread": False}
+)
 
-next_task_id = 4
+
+SessionLocal = sessionmaker(
+    autocommit = False,
+    autoflush = False,
+    bind = engine
+)
+
+Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+
+    try:
+        yield db
+    
+    finally:
+        db.close()

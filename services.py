@@ -1,5 +1,5 @@
 from fastapi import HTTPException, status 
-from models import Task, TaskUpdate, TaskCreate, TaskPatch
+from schemas import Task, TaskUpdate, TaskCreate, TaskPatch
 import database
 
 def raise_404_HTTPException():

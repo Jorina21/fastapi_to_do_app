@@ -2,8 +2,9 @@ from typing import Annotated
 
 from fastapi import FastAPI, Query, status, Path
 # import database  
-import services 
-from models import TaskCreate, Task, TaskUpdate, TaskPatch, TaskDeleteResponse
+import services
+ 
+from schemas import TaskCreate, Task, TaskUpdate, TaskPatch, TaskDeleteResponse
 
 app = FastAPI(
     title= "Task Tracker API",
