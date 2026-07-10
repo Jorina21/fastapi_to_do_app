@@ -7,9 +7,12 @@ import services
 from database import Base, engine
 from schemas import TaskCreate, Task, TaskUpdate, TaskPatch, TaskDeleteResponse
 
-#Create tables using the models connected to base
+
+
+#Create tables using the models connected to base (TaskModel)
+#Create tables from the blueprint if they do no already exist
 Base.metadata.create_all(bind=engine)
- 
+
 
 app = FastAPI(
     title= "Task Tracker API",
@@ -55,7 +58,7 @@ def get_tasks(
         description="Search tasks by title or description."
     )
     ):
-    results = services.get_all_tasks()
+    results = services.get_all_tasks(engine)
 
     if completed is not None:
        results = [task for task in results if task.completed == completed ]
