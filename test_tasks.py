@@ -8,6 +8,7 @@ import database
 
 client = TestClient(app)
 
+#registers function as fixture(predicatble state), which allows dependency injection(passing data as arguments no need to create/destroy them)
 @pytest.fixture(autouse = True)
 def reset_database():
     database.tasks = database.get_default_tasks()
