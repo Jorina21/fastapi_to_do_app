@@ -39,8 +39,25 @@ def create_task(db: Session, task: TaskCreate) -> Task:
 
     
 
-def update_task(db: Session, task_id: int, ):
-    pass
+def update_task(db: Session, task_id: int, updated_task: TaskUpdate):
+    # find the id 
+    task = find_task_by_id(task_id)
+
+    if task is not None:
+        new_task = Task(
+            id = task.id, #not good you can change id
+            title = updated_task.title,
+            description= updated_task.description,
+            completed = updated_task.completed,       
+        )
+        # stage task to be sent to db 
+        db.add(new_task)
+        db.commit()
+        db.refresh(new_task)
+
+
+    raise_404_HTTPException()
+   
 
 def patch_task(id : int, patched_task: TaskPatch):
     pass
