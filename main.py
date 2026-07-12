@@ -1,12 +1,12 @@
 from typing import Annotated
 
-from fastapi import FastAPI, Query, status, Path
+from fastapi import FastAPI, Query, status, Path, Depends
 
 import models
 import services
-from database import Base, engine
+from database import Base, engine, get_db
 from schemas import TaskCreate, Task, TaskUpdate, TaskPatch, TaskDeleteResponse
-
+from sqlalchemy.orm import Session
 
 
 #Create tables using the models connected to base (TaskModel)
@@ -104,9 +104,12 @@ def get_tasks(task_id : TaskID
         summary="Fully update a task",
         description="Replace all editable fields of an existing task: title, description, and completed."
         )
-def update_task(task_id: TaskID , updated_task : TaskUpdate):
+def update_task(
+                task_id: int ,
+                updated_task : TaskUpdate,
+                db: Session = Depends(get_db)):
     
-    return services.update_task(task_id, updated_task)
+    return services.update_task( db,task_id, updated_task)
 
 
 

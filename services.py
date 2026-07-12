@@ -17,7 +17,7 @@ def raise_404_HTTPException():
 
 def get_all_tasks(db: Session): 
     statement = select(TaskModel)
-    return db.execute(statement).scalars().all
+    return db.connect().scalars().all
    
 
 
@@ -41,23 +41,20 @@ def create_task(db: Session, task: TaskCreate) -> Task:
 
 def update_task(db: Session, task_id: int, updated_task: TaskUpdate):
     # find the id 
-    task = find_task_by_id(task_id)
+    task = find_task_by_id(db, task_id)
 
     if task is not None:
-        new_task = Task(
-            id = task.id, #not good you can change id
-            title = updated_task.title,
-            description= updated_task.description,
-            completed = updated_task.completed,       
-        )
-        # stage task to be sent to db 
-        db.add(new_task)
+        task.title = updated_task.title,
+        task.description= updated_task.description,
+        task.completed = updated_task.completed,       
+        
         db.commit()
-        db.refresh(new_task)
+        db.refresh(task)
 
 
     raise_404_HTTPException()
    
+    return task
 
 def patch_task(id : int, patched_task: TaskPatch):
     pass
