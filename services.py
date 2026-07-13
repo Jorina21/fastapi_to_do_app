@@ -1,9 +1,10 @@
-from sqlalchemy.orm import Session
 from sqlalchemy import select
+from sqlalchemy.orm import Session
+
 from fastapi import HTTPException, status 
 
-from schemas import Task, TaskUpdate, TaskCreate, TaskPatch
 from models import TaskModel
+from schemas import Task, TaskUpdate, TaskCreate, TaskPatch
 
 def raise_404_HTTPException():
             raise HTTPException(status_code = status.HTTP_404_NOT_FOUND,
@@ -17,7 +18,7 @@ def raise_404_HTTPException():
 
 def get_all_tasks(db: Session): 
     statement = select(TaskModel)
-    return db.connect().scalars().all
+    return list(db.execute(statement).scalars().all()) #all and list are the same thing
    
 
 
