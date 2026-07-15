@@ -18,6 +18,7 @@ def raise_404_HTTPException():
 
 def get_all_tasks(db: Session): 
     statement = select(TaskModel)
+        
     return list(db.execute(statement).scalars().all()) #all and list are the same thing
    
 

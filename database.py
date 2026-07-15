@@ -30,9 +30,9 @@ SessionLocal = sessionmaker( #returns a class
 # returns a class like object 
 
 class Base(DeclarativeBase):
-    pass #instead of using prev use this
+    pass #can add more functionality here
 
-def get_db() -> Generator[Session: None, None]: #why 3 items in the list?
+def get_db() -> Generator[Session: None, None]:#Generator[Yield_type, send_type, Return_Type] #why 3 items in the list?
     db = SessionLocal()  #sessionmaker implements __call__ which allows it to be called like a function (factory)
 
     try:

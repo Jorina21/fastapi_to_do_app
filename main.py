@@ -50,7 +50,7 @@ def home_page():
         description="Return all tasks. You can optionally filter by completion status or search by title/description."
 )
 def get_tasks(
-    db: DbSession, 
+    db: DbSession, #first argument
     completed : Annotated[
         bool | None,
         Query(
