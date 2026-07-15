@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 Base.metadata.create_all(bind=engine)
 
 
+
 app = FastAPI(
     title= "Task Tracker API",
     description= "Simple FastAPI CRUD project for learning backend fundamentals",
@@ -28,6 +29,8 @@ TaskID = Annotated[
         description="The Unique positive ID of the task."
     )
 ]
+
+DbSession = Annotated[Session, Depends(get_db)]#no need to manually get session
 
 @app.get("/",
         tags = ["tags: Home"],
@@ -47,18 +50,23 @@ def home_page():
         description="Return all tasks. You can optionally filter by completion status or search by title/description."
 )
 def get_tasks(
-    completed : bool | None = Query(
-        default=None,
-        description="Filter task by completion status"
-        ),
-    search : str | None = Query(
-        default=None,
-        min_length=1,
-        max_length=100,
-        description="Search tasks by title or description."
-    )
+    db: DbSession, 
+    completed : Annotated[
+        bool | None,
+        Query(
+            description = "Filter task by completion status. Use true for completed tasks or false for incomplete tasks."
+        )
+    ] = None,
+
+    search : Annotated[
+        str | None,
+        Query(
+            min_length=1,
+            max_length=100,
+            description="Search tasks by title or description."
+    )] = None
     ):
-    results = services.get_all_tasks(engine)
+    results = services.get_all_tasks(db)
 
     if completed is not None:
        results = [task for task in results if task.completed == completed ]
@@ -77,8 +85,8 @@ def get_tasks(
         tags=["Tasks"],
         summary="Create a Task",
         description="Create a new task. The server automatically assigns the task ID and sets completed to false.") #does this run first or after? status code before or after succession? Why does post have status code? what do each route have guranteed or good practice exp get, post, update ,delete? 
-def create_task(task : TaskCreate):
-    return services.create_task(task)
+def create_task(task : TaskCreate, db : DbSession):
+    return services.create_task(db, task) #why is it reversed? 
 
 #read
 @app.get("/tasks/{task_id}",
