@@ -11,7 +11,8 @@ from sqlalchemy.orm import Session
 
 #Create tables using the models connected to base (TaskModel)
 #Create tables from the blueprint if they do no already exist
-Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine) 
+
 
 
 
@@ -31,7 +32,23 @@ TaskID = Annotated[
 ]
 
 DbSession = Annotated[Session, Depends(get_db)]#Reusable alias 
-#DbSesson should be a Session and Fastapi should get Session by running get_db
+#DbSession should be a Session and Fastapi should get Session by running get_db
+
+CompletedQuery = Annotated[
+    bool | None,
+    Query(
+        description="Filter tasks by completion status. Use true for completed tasks or false"
+    )
+]
+
+SearchQuery = Annotated[
+    str | None,
+    Query(
+        min_length = 1, 
+        max_length = 100,
+        description = "Search tasks by title or description."
+    )
+]
 
 @app.get("/",
         tags = ["tags: Home"],
@@ -43,6 +60,20 @@ def home_page():
         "message": "welcome to the home page"
     }
 
+
+
+
+
+
+
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#######################
+
+
+
+
+
+
 @app.get("/tasks",
         response_model = list[Task],
         status_code = status.HTTP_200_OK,
@@ -53,20 +84,9 @@ def home_page():
 def get_tasks(
     db: DbSession, #first argument
     
-    completed : Annotated[
-        bool | None,
-        Query(
-            description = "Filter task by completion status. Use true for completed tasks or false for incomplete tasks."
-        )
-    ] = None,
+    completed : CompletedQuery = None,
 
-    search : Annotated[
-        str | None,
-        Query(
-            min_length=1,
-            max_length=100,
-            description="Search tasks by title or description."
-    )] = None
+    search : SearchQuery = None
 
     ):
     
@@ -76,7 +96,14 @@ def get_tasks(
        results = [task for task in results if task.completed == completed ]
 
     if search is not None:
-       results = [task for task in results if task.title.lower() in search.lower() or task.title.upper() in search.upper()]
+       results = [
+            task for task in results
+            if search.lower() in task.title.lower()
+            or (
+                task.description is not None
+                and search.lower() in task.description.lower()
+            )
+        ]
 
     return results
 
@@ -89,8 +116,12 @@ def get_tasks(
         tags=["Tasks"],
         summary="Create a Task",
         description="Create a new task. The server automatically assigns the task ID and sets completed to false.") #does this run first or after? status code before or after succession? Why does post have status code? what do each route have guranteed or good practice exp get, post, update ,delete? 
-def create_task(task : TaskCreate, db : DbSession):
+def create_task(db : DbSession, task : TaskCreate):
     return services.create_task(db, task) #why is it reversed? 
+
+
+
+
 
 #read
 @app.get("/tasks/{task_id}",
@@ -108,7 +139,11 @@ def get_tasks(db: DbSession, task_id : TaskID
     return task 
 
 
-#update tasks
+
+
+
+
+#update tasks(Working)
 @app.put("/tasks/{task_id}",
         response_model = Task,
         status_code = status.HTTP_200_OK,
@@ -117,11 +152,40 @@ def get_tasks(db: DbSession, task_id : TaskID
         description="Replace all editable fields of an existing task: title, description, and completed."
         )
 def update_task(
-                task_id: int ,
+                db: DbSession,
+                task_id: int,
                 updated_task : TaskUpdate,
-                db: Session = Depends(get_db)):
+                ):
     
     return services.update_task( db,task_id, updated_task)
+
+
+###############################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

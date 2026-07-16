@@ -11,14 +11,14 @@ def raise_404_HTTPException():
                             detail = "Task not found"
         )
 
-# def next_task_id():
-#     current_task_id = database.next_task_id
-#     database.next_task_id += 1 
-#     return current_task_id
+
+
+
+
+
 
 def get_all_tasks(db: Session)-> list[TaskModel]: 
     statement = select(TaskModel)
-        
     return list(db.execute(statement).scalars().all()) #all and list are the same thing
    
 
@@ -26,6 +26,9 @@ def get_all_tasks(db: Session)-> list[TaskModel]:
 def find_task_by_id(db: Session, task_id: int) -> TaskModel | None:
     statement = select(TaskModel).where(TaskModel.id == task_id)
     return db.execute(statement).scalar_one_or_none()
+
+
+
 
 def create_task(db: Session, task: TaskCreate) -> TaskModel:
     db_task = TaskModel(
@@ -58,7 +61,58 @@ def update_task(db: Session, task_id: int, updated_task: TaskUpdate):
    
     return task
 
-def patch_task(id : int, patched_task: TaskPatch):
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def patch_task(db: Session, task_id : int, patched_task: TaskPatch): #why say db of type session? 
+    #for editing task can update all or none 
+
+    task = select(TaskModel).Where(TaskModel.id == task_id)
+    #task has a task inside it of taskModel (SQL Data --> Python)
+
+    #what type does a select statement return
+    #do you need to convert to a python type
+    #commit, add, refresh? 
+
+
     pass
 
 
