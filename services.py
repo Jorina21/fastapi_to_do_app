@@ -16,18 +16,18 @@ def raise_404_HTTPException():
 #     database.next_task_id += 1 
 #     return current_task_id
 
-def get_all_tasks(db: Session): 
+def get_all_tasks(db: Session)-> list[TaskModel]: 
     statement = select(TaskModel)
         
     return list(db.execute(statement).scalars().all()) #all and list are the same thing
    
 
 
-def find_task_by_id(db: Session, task_id: int):
+def find_task_by_id(db: Session, task_id: int) -> TaskModel | None:
     statement = select(TaskModel).where(TaskModel.id == task_id)
     return db.execute(statement).scalar_one_or_none()
 
-def create_task(db: Session, task: TaskCreate) -> Task:
+def create_task(db: Session, task: TaskCreate) -> TaskModel:
     db_task = TaskModel(
         title = task.title,
         description = task.description,
@@ -68,6 +68,8 @@ def complete_task():
 
 def delete_task(task_id : int):
     pass
+
+
 
 
 def get_task_index_by_id(task_id):

@@ -30,7 +30,8 @@ TaskID = Annotated[
     )
 ]
 
-DbSession = Annotated[Session, Depends(get_db)]#no need to manually get session
+DbSession = Annotated[Session, Depends(get_db)]#Reusable alias 
+#DbSesson should be a Session and Fastapi should get Session by running get_db
 
 @app.get("/",
         tags = ["tags: Home"],
@@ -51,6 +52,7 @@ def home_page():
 )
 def get_tasks(
     db: DbSession, #first argument
+    
     completed : Annotated[
         bool | None,
         Query(
@@ -65,7 +67,9 @@ def get_tasks(
             max_length=100,
             description="Search tasks by title or description."
     )] = None
+
     ):
+    
     results = services.get_all_tasks(db)
 
     if completed is not None:
@@ -95,9 +99,9 @@ def create_task(task : TaskCreate, db : DbSession):
         summary="Get one task",
         description="Return one task by its unique ID."
 )
-def get_tasks(task_id : TaskID
+def get_tasks(db: DbSession, task_id : TaskID
 ) -> Task:
-    task = services.get_task_by_id(task_id)
+    task = services.find_task_by_id(db,task_id)
     if task is None:
         return services.raise_404_HTTPException()
     

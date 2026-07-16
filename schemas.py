@@ -59,5 +59,3 @@ class Task(BaseModel):
 class TaskDeleteResponse(BaseModel):
     message: str
     deleted_task: Task
-
-    
