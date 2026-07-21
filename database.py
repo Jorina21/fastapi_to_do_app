@@ -17,12 +17,11 @@ engine = create_engine(
 
 #Creates sessions (session factory)
 SessionLocal = sessionmaker( #returns a class 
-    #sessionlocal creates(session objects) 
+    bind = engine,#sessionlocal creates(session objects) 
     #sessionmaker inherits from session base class
     expire_on_commit = False,#makes returned objects easier to work with after commits()
     # autocommit = False, #wait until i say db.commit then save
     autoflush = False, #dont push pending changes to the db before every query
-    bind = engine
 )
 
 
